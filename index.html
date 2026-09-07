@@ -3,49 +3,752 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushoku Tensei Notes</title>
+
+    <title>Mushoku Tensei — Notes</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
         body {
-            background: #111827;
+            margin: 0;
+            background: #0b0f14;
             color: #e5e7eb;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111827;
+            border-right: 1px solid #263244;
+            padding: 25px 15px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar h1 {
+            font-size: 22px;
+            color: #f3c969;
+            margin: 0 10px 5px;
+        }
+
+        .sidebar p {
+            font-size: 12px;
+            color: #9ca3af;
+            margin: 0 10px 25px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6b7280;
+            margin: 20px 10px 8px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 12px;
+            margin: 3px 0;
+            border-radius: 7px;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: #1f2937;
+            color: #f3c969;
+        }
+
+        /* MAIN CONTENT */
+
+        .content {
+            margin-left: 250px;
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px;
+            padding: 50px;
         }
 
-        h1 {
-            color: #f9fafb;
+        section {
+            margin-bottom: 80px;
+            scroll-margin-top: 30px;
         }
 
-        .map-container {
-            margin-top: 20px;
+        h2 {
+            color: #f3c969;
+            font-size: 30px;
+            border-bottom: 1px solid #263244;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            color: #f1d58a;
+            margin-top: 30px;
+        }
+
+        /* HOME */
+
+        .hero {
+            padding: 40px;
+            background:
+                linear-gradient(
+                    rgba(17, 24, 39, 0.85),
+                    rgba(17, 24, 39, 0.95)
+                );
+            border: 1px solid #263244;
+            border-radius: 15px;
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin: 0 0 10px;
+            color: #f3c969;
+        }
+
+        .hero p {
+            color: #9ca3af;
+        }
+
+        .warning {
+            background: #2a2111;
+            border: 1px solid #6b5220;
+            color: #f5d98c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+
+        /* CHARACTER CARDS */
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 10px;
+            padding: 20px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #6b5525;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #f3c969;
+        }
+
+        .card p {
+            color: #cbd5e1;
+            margin-bottom: 0;
+        }
+
+        /* RELATIONSHIPS */
+
+        .relationship {
+            background: #111827;
+            border-left: 4px solid #f3c969;
+            padding: 18px 22px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .relationship h3 {
+            margin: 0 0 8px;
+        }
+
+        /* TERMS */
+
+        .term {
+            background: #111827;
+            border: 1px solid #263244;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .term strong {
+            color: #f3c969;
+        }
+
+        /* WORLD MAP */
+
+        .map-wrapper {
             text-align: center;
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .map-wrapper p {
+            color: #9ca3af;
         }
 
         .map {
-            max-width: 100%;
-            height: auto;
+            width: 100%;
+            max-height: 750px;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: zoom-in;
+            transition: 0.2s;
+        }
+
+        .map:hover {
+            opacity: 0.9;
+        }
+
+        .map-hint {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 10px;
+        }
+
+        /* FULLSCREEN MAP */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            cursor: zoom-out;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* PLACEHOLDER SECTIONS */
+
+        .placeholder {
+            background: #111827;
+            border: 1px dashed #374151;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            color: #9ca3af;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #263244;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 25px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <h1>Mushoku Tensei Notes</h1>
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <h2>🗺️ Six-Faced World Map</h2>
+<nav class="sidebar">
 
-    <div class="map-container">
+    <h1>📖 Mushoku Tensei</h1>
+    <p>Personal Reading Notes</p>
+
+    <div class="nav-title">Navigation</div>
+
+    <a href="#home">🏠 Home</a>
+    <a href="#characters">👤 Main Characters</a>
+    <a href="#relationships">❤️ Relationships</a>
+    <a href="#groups">⚔️ Groups & Terms</a>
+    <a href="#locations">🌎 Locations</a>
+    <a href="#volumes">📚 Volumes</a>
+    <a href="#map">🗺️ World Map</a>
+    <a href="#notes">📝 Personal Notes</a>
+
+</nav>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<main class="content">
+
+
+<!-- HOME -->
+
+<section id="home">
+
+    <div class="hero">
+
+        <h1>Mushoku Tensei</h1>
+
+        <p>
+            Personal notes, characters, relationships, locations,
+            world information and reading progress.
+        </p>
+
+        <div class="warning">
+            ⚠️ <strong>Spoiler boundary:</strong>
+            Notes currently cover Volumes 1–14 only.
+            Anything from Volume 15 onward should be considered spoiler territory.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CHARACTERS -->
+
+<section id="characters">
+
+    <h2>👤 Main Characters</h2>
+
+    <div class="character-grid">
+
+        <div class="card">
+            <h3>Rudeus Greyrat</h3>
+            <p>
+                Protagonist. Reincarnated into the Six-Faced World.
+                Uses the name Rudeus.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Sylphiette (Sylphy)</h3>
+            <p>
+                Rudeus's childhood friend. Green-haired,
+                half-human/half-Superd. Rudeus knew her as Fitz later on.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Eris Boreas Greyrat</h3>
+            <p>
+                Rudeus's former student/partner during the Demon Continent
+                journey. Extremely strong swordswoman.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Roxy Migurdia</h3>
+            <p>
+                Rudeus's first major magic teacher. Migurd mage.
+                Rudeus deeply respects her.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Paul Greyrat</h3>
+            <p>
+                Rudeus's father. Former adventurer and swordsman.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Zenith Greyrat</h3>
+            <p>
+                Rudeus's mother. Former adventurer and healer.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Lilia</h3>
+            <p>
+                Paul and Zenith's former maid. Also Paul's second wife.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Aisha Greyrat</h3>
+            <p>
+                Paul's daughter with Lilia; Rudeus's younger half-sister.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Norn Greyrat</h3>
+            <p>
+                Paul's daughter with Zenith; Rudeus's younger sister.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Ghislaine Dedoldia</h3>
+            <p>
+                Beastwoman swordswoman. Eris's bodyguard and
+                Rudeus's sword instructor.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Ruijerd Superdia</h3>
+            <p>
+                Superd warrior who travels with Rudeus and Eris.
+                Becomes extremely important to them.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Orsted — The Dragon God</h3>
+            <p>
+                Rudeus encounters him during the journey.
+                Very important person to remember.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Nanahoshi Shizuka</h3>
+            <p>
+                Mysterious Japanese girl transported to the Six-Faced World.
+                Connected to Rudeus's previous world.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Hitogami</h3>
+            <p>
+                The mysterious Human God who appears in Rudeus's dreams
+                and gives him advice. Don't trust him blindly.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- RELATIONSHIPS -->
+
+<section id="relationships">
+
+    <h2>❤️ Relationships</h2>
+
+    <div class="relationship">
+        <h3>Rudeus → Sylphy</h3>
+        <p>
+            Childhood friends → separated → reunited as Fitz.
+            By the end of Vol. 12, they're married.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Roxy</h3>
+        <p>
+            Teacher → respected companion → romantic relationship develops.
+            Roxy becomes one of Rudeus's wives.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Eris</h3>
+        <p>
+            Teacher/student → adventuring partners → lovers.
+            Eris leaves to train after their night together because of
+            her misunderstanding.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Paul</h3>
+        <p>
+            Father/son relationship. Complicated at times,
+            but they ultimately care deeply about each other.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Zenith</h3>
+        <p>
+            Mother/son. Zenith's condition after the Begaritt Labyrinth
+            is extremely important.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Norn & Aisha</h3>
+        <p>
+            Younger sisters. Norn has a complicated relationship with
+            Rudeus because of her feelings about him. Aisha is extremely
+            capable and generally very comfortable around Rudeus.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Ruijerd</h3>
+        <p>
+            Started as companions traveling together. Rudeus comes to
+            deeply respect and trust him. Ruijerd becomes almost like
+            a protective older-brother figure.
+        </p>
+    </div>
+
+    <div class="relationship">
+        <h3>Rudeus → Orsted</h3>
+        <p>
+            Initially terrified because of Orsted's reputation/presence.
+            Their encounter at the Millis Continent is one of the biggest
+            turning points in Rudeus's life.
+        </p>
+    </div>
+
+</section>
+
+
+<!-- GROUPS -->
+
+<section id="groups">
+
+    <h2>⚔️ Important Groups / Terms</h2>
+
+    <div class="term">
+        <strong>Greyrat Family</strong><br>
+        Rudeus's family.
+    </div>
+
+    <div class="term">
+        <strong>Notos / Boreas / etc.</strong><br>
+        Branches of the Greyrat family.
+    </div>
+
+    <div class="term">
+        <strong>Seven Great Powers</strong><br>
+        The world's strongest individuals; Orsted is the Dragon God.
+    </div>
+
+    <div class="term">
+        <strong>Dragon God Orsted</strong><br>
+        One of the Seven Great Powers.
+    </div>
+
+    <div class="term">
+        <strong>Human God / Hitogami</strong><br>
+        Mysterious being communicating with Rudeus.
+    </div>
+
+    <div class="term">
+        <strong>Superd</strong><br>
+        Ruijerd's demon race, feared because of the Laplace Demon conflict.
+    </div>
+
+    <div class="term">
+        <strong>Dead End</strong><br>
+        The adventuring party name of Rudeus + Eris + Ruijerd.
+    </div>
+
+    <div class="term">
+        <strong>Fangs of the Black Wolf</strong><br>
+        Paul's old adventuring party.
+    </div>
+
+    <div class="term">
+        <strong>University of Magic</strong><br>
+        Where Rudeus, Sylphy/Fitz, Roxy, etc. have connections.
+    </div>
+
+</section>
+
+
+<!-- LOCATIONS -->
+
+<section id="locations">
+
+    <h2>🌎 Locations</h2>
+
+    <div class="term">
+        <strong>Begaritt Continent</strong><br>
+        Where Rudeus went searching for Zenith.
+    </div>
+
+    <div class="term">
+        <strong>Six-Faced World</strong><br>
+        The world in which the story takes place.
+    </div>
+
+    <div class="placeholder">
+        Add important cities, countries, continents and other locations
+        here as you encounter them.
+    </div>
+
+</section>
+
+
+<!-- VOLUMES -->
+
+<section id="volumes">
+
+    <h2>📚 Reading Progress</h2>
+
+    <div class="term">
+        <strong>Light Novel Volumes</strong>
+    </div>
+
+    <p>
+        <strong>Currently documented:</strong> Volumes 1–14
+    </p>
+
+    <div class="placeholder">
+        You can add your thoughts, ratings and favorite moments for
+        each volume here.
+        <br><br>
+
+        Example:
+        <br>
+        <strong>Volume 1:</strong> ⭐⭐⭐⭐⭐
+        <br>
+        <strong>Volume 2:</strong> ⭐⭐⭐⭐
+        <br>
+        <strong>Volume 3:</strong> ⭐⭐⭐⭐⭐
+    </div>
+
+</section>
+
+
+<!-- WORLD MAP -->
+
+<section id="map">
+
+    <h2>🗺️ World Map</h2>
+
+    <div class="map-wrapper">
+
+        <p>
+            Six-Faced World — click the map to view it fullscreen.
+        </p>
+
         <img
             src="images/world-map.webp"
             alt="Mushoku Tensei Six-Faced World Map"
             class="map"
+            onclick="openMap()"
         >
+
+        <p class="map-hint">
+            🔍 Click the map to enlarge
+        </p>
+
     </div>
+
+</section>
+
+
+<!-- PERSONAL NOTES -->
+
+<section id="notes">
+
+    <h2>📝 Personal Notes</h2>
+
+    <div class="placeholder">
+
+        <p>
+            Use this section for your own thoughts while reading.
+        </p>
+
+        <p>
+            Things you could keep track of:
+        </p>
+
+        <ul>
+            <li>Favorite characters</li>
+            <li>Predictions</li>
+            <li>Theories</li>
+            <li>Favorite moments</li>
+            <li>Questions you have</li>
+            <li>Things you don't understand yet</li>
+            <li>Important events</li>
+            <li>Quotes you like</li>
+        </ul>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<!-- =========================
+     FULLSCREEN MAP MODAL
+========================= -->
+
+<div class="modal" id="mapModal" onclick="closeMap()">
+
+    <span class="close">&times;</span>
+
+    <img
+        src="images/world-map.webp"
+        alt="Mushoku Tensei World Map Fullscreen"
+    >
+
+</div>
+
+
+<script>
+
+    function openMap() {
+        document.getElementById("mapModal").style.display = "flex";
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeMap() {
+        document.getElementById("mapModal").style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+    document.addEventListener("keydown", function(event) {
+
+        if (event.key === "Escape") {
+            closeMap();
+        }
+
+    });
+
+</script>
 
 </body>
 </html>
